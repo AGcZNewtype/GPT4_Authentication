@@ -108,6 +108,6 @@ def upload():
 
 
 
-if __name__ == '__main__':
-    st.title('PDF File Uploader')
-    upload()
+# if __name__ == '__main__':
+#     st.title('PDF File Uploader')
+#     upload()
