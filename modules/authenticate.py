@@ -2,10 +2,9 @@ import streamlit as st
 import tempfile
 from pathlib import Path
 import base64
-import text_unit
-import GPT_api
+from modules import text_unit, GPT_api
 import os
-from BERT_model import BertModelWrapper
+from modules.BERT_model import BertModelWrapper
 
 
 
@@ -111,3 +110,5 @@ def upload():
 # if __name__ == '__main__':
 #     st.title('PDF File Uploader')
 #     upload()
+def a():
+    print("authen is ok")
