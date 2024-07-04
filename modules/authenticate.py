@@ -2,7 +2,7 @@ import streamlit as st
 import tempfile
 from pathlib import Path
 import base64
-from modules import text_unit, GPT_api
+from modules import text_unit, GPT_api, web_unit
 import os
 from modules.BERT_model import BertModelWrapper
 
@@ -13,7 +13,7 @@ from modules.BERT_model import BertModelWrapper
 def authenticator(ques, ans, tmp_file, original_filename):
 
     st.write("请回答以下问题?")
-    # print(ques,ans)
+    print(ques,ans)
     evidence_list = []
 
     #遍历问题和会话框
@@ -41,7 +41,10 @@ def authenticator(ques, ans, tmp_file, original_filename):
             similarity = text_unit.avg_similarity(total_similarity)
             # print(text_unit.avg_similarity(total_similarity))
 
-            #保存并关闭临时文件
+            item_id = hash(original_filename)
+            #保存到数据库
+            web_unit.add_result(item_id, original_filename, st.session_state['username'], similarity)
+            # 保存并关闭临时文件
             save_uploaded_file(tmp_file, original_filename)
             os.remove(tmp_file)
             st.rerun()
