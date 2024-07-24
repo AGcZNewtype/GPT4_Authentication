@@ -1,7 +1,15 @@
-import streamlit as st
+import time
 import streamlit as st
 import mysql.connector
+import random
 from mysql.connector import Error
+import hashlib
+
+def generate_hash(input_string):
+    input_bytes = input_string.encode('utf-8')
+    hash_object = hashlib.sha256(input_bytes)
+    hash_hex = hash_object.hexdigest()
+    return hash_hex[:20]
 
 
 def check_user_info(email, password):
@@ -13,7 +21,7 @@ def check_user_info(email, password):
     )
 
     # 查询数据库
-    query = "SELECT password, userid, username FROM userInfo WHERE email='%s'" % email
+    query = "SELECT username, password, salt, userid FROM userInfo WHERE email='%s'" % email
     df = conn.query(query)
 
     # 检查查询结果是否为空
@@ -24,20 +32,24 @@ def check_user_info(email, password):
     # 获取 password 和 userId
     password_db = df.iloc[0]['password']
     uid = df.iloc[0]['userid']
+    salt = df.iloc[0]['salt']
     username = df.iloc[0]['username']
+    password_salt = generate_hash(str(password)+str(salt))
+    # print("this is login:",salt,password_salt,password_db)
+
 
     # 验证密码
-    if password_db == password:
+    if password_db == password_salt:
         st.write("ok!")
         st.session_state.uid = uid
         st.session_state.username = username
-        st.switch_page("app.py")
+        st.switch_page("pages/home.py")
     else:
         st.write("wrong password!!")
 
 
 
-def create_user(username, email, password, userid):
+def create_user(username, email, password, salt, userid):
     try:
         # 建立数据库连接
         conn = mysql.connector.connect(
@@ -51,16 +63,19 @@ def create_user(username, email, password, userid):
             cursor = conn.cursor()
             # 生成 SQL 插入查询
             query = """
-                INSERT INTO userInfo (username, email, password, userid)
-                VALUES (%s, %s, %s, %s)
+                INSERT INTO userInfo (username, email, password, salt, userid)
+                VALUES (%s, %s, %s, %s, %s)
             """
             # 执行查询并提交更改
-            cursor.execute(query, (username, email, password, userid))
+            cursor.execute(query, (username, email, password, salt, userid))
             conn.commit()
-            st.write("用户注册成功！")
+            print(st.session_state.uid)
+            st.write("Registered successfully！")
 
     except Error as e:
-        st.write(f"Error: {e}")
+        # st.write(f"Error: {e}")
+        st.write("Already registered!")
+        time.sleep(3)
 
     finally:
         if conn.is_connected():
@@ -68,19 +83,29 @@ def create_user(username, email, password, userid):
             conn.close()
 
 
-def check_uploads():
+
+def check_uploads(username):
+    if username == "all":
+        query = "SELECT item_id, item_name, uploader, score FROM result WHERE 1"
+    else:
+        query = "SELECT item_id, item_name, uploader, score FROM result WHERE uploader='%s'" % username
     conn = st.connection(
         name="local_db",
         type="sql",
         url="mysql://root:root@localhost:3306/streamlitDB"
     )
 
-    query = "SELECT item_id, item_name, uploader, score FROM result WHERE 1"
+
     df = conn.query(query)
 
-    # 打印查询结果进行调试
-    st.write("Query executed successfully")
-    st.write(df)
+    if df.empty:
+        st.write("It's empty! Waiting for upload!!!")
+
+    else:
+        # 使用st.dataframe来创建可滑动的数据框
+        st.dataframe(df, width=800, height=440, hide_index=True)
+        # 打印查询结果进行调试
+
 
 
 def add_result(item_id,item_name, uploader, score):
@@ -112,3 +137,4 @@ def add_result(item_id,item_name, uploader, score):
         if conn.is_connected():
             cursor.close()
             conn.close()
+

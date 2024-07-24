@@ -1,27 +1,26 @@
 import streamlit as st
 
+
+#create navigator constraction
+pages = {
+    "Your account" : [
+        st.Page("pages/home.py", title="Home Page"),
+        st.Page("pages/login.py", title="Log In"),
+st.Page("pages/register.py", title="Register"),
+        st.Page("pages/logout.py", title="Log Out")
+    ],
+    "Authenticator" : [
+        st.Page("pages/auth.py", title="authenticate Document"),
+        st.Page("pages/view.py", title="View Result")
+    ]
+}
+
+
+#initilize session key.
 if 'uid' not in st.session_state:
     st.session_state.uid = 0
-    st.title("welcome to GPT4 Authorship Identification, Please login first")
 
-elif st.session_state.uid == 0:
-    st.title("welcome to GPT4 Authorship Identification, Please login first")
 
-else:
-    conn = st.connection(
-        "local_db",
-        type="sql",
-        url="mysql://root:root@localhost:3306/streamlitDB"
-    )
-
-    query = "SELECT username FROM userInfo WHERE userid='%s'" % st.session_state.uid
-    df = conn.query(query)
-
-    if df.empty:
-        st.write("please login!!!.")
-        st.switch_page("login.py")
-
-    else:
-        username = df.iloc[0]['username']
-        st.title("welcome to GPT4 Authorship Identification, "+username)
+pg = st.navigation(pages)
+pg.run()
 

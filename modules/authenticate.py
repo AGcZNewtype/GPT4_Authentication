@@ -30,7 +30,7 @@ def authenticator(ques, ans, tmp_file, original_filename):
             st.success("回答已提交！")
             # st.write(evidence_list)
 
-            #创建bert模型并对结果进行验证
+            # 创建bert模型并对结果进行验证
             BertModel = BertModelWrapper()
             total_similarity = []
 
@@ -94,13 +94,14 @@ def upload():
                 #转化文件为纯文本
                 file = text_unit.extract_text_from_pdf(tmp_file.name)
 
-                # 使用GPT生成问题和答案
-                response = GPT_api.GPT_generation(file)
+                # # 使用GPT生成问题和答案
+                # response = GPT_api.GPT_generation(file)
+                #
+                # # 对GPT回答进行切分归类处理
+                # ques, ans = text_unit.response_split(response)
 
-                # 对GPT回答进行切分归类处理
-                ques, ans = text_unit.response_split(response)
-
-
+                ques=["1","2"]
+                ans=["1","2"]
                 #打开临时会话，回答问题并进行验证(同时传入文件以进行保存)
                 authenticator(ques, ans, tmp_file.name, file_name)
 

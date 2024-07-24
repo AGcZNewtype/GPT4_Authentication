@@ -1,20 +1,25 @@
 import streamlit as st
 from modules import web_unit
+import time
 
 if st.session_state['uid'] == 0:
-    # 输入邮箱
+    st.title("Please log in here!")
+    # input email
     email = st.text_input("email")
-    # 输入密码
-    password = st.text_input("password")
+    # input password
+    password = st.text_input("password",type="password")
 
 
-    if st.button("登录",type="primary", key="login"):
+    #Query user information
+    if st.button("Login", key="login"):
         web_unit.check_user_info(email, password)
 
 
 else:
     st.write("You have already logged in")
+    time.sleep(3)
+    st.switch_page("pages/home.py")
 
 #注册按钮
-if st.button("注册", key="register"):
-    st.switch_page("pages/create.py")
+if st.button("Register",type="primary", key="register"):
+    st.switch_page("pages/register.py")
