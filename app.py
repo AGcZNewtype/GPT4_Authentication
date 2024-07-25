@@ -20,7 +20,7 @@ st.Page("pages/register.py", title="Register"),
 if 'uid' not in st.session_state:
     st.session_state.uid = 0
 
-
+#run the navigation
 pg = st.navigation(pages)
 pg.run()
 

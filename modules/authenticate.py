@@ -7,30 +7,29 @@ import os
 from modules.BERT_model import BertModelWrapper
 
 
-
-#认证临时会话框
-@st.experimental_dialog("Please answer the question!",width="large")
+# Temporary session box for authentication
+@st.experimental_dialog("Please answer the question!", width="large")
 def authenticator(ques, ans, tmp_file, original_filename):
 
-    st.write("请回答以下问题?")
-    print(ques,ans)
+    st.write("Please answer the following question?")
+    print(ques, ans)
     evidence_list = []
 
-    #遍历问题和会话框
+    # Iterate through the questions and display input boxes for answers
     for i, question in enumerate(ques):
-        st.write(f"问题 {i + 1}: {question}")
-        reason = st.text_input(f"回答问题 {i + 1}", key=f"answer_{i}")
+        st.write(f"Question {i + 1}: {question}")
+        reason = st.text_input(f"Please answer {i + 1}", key=f"answer_{i}")
         if len(reason) != 0:
             evidence_list.append(reason)
 
-    #提交后进行问题验证
-    if st.button("提交回答"):
+    # Verify answers upon submission
+    if st.button("Submit"):
         if len(evidence_list) == len(ques):
             st.session_state.vote = {"evidence": evidence_list}
-            st.success("回答已提交！")
+            st.success("Answer submitted!")
             # st.write(evidence_list)
 
-            # 创建bert模型并对结果进行验证
+            # Create BERT model and validate the results
             BertModel = BertModelWrapper()
             total_similarity = []
 
@@ -42,41 +41,35 @@ def authenticator(ques, ans, tmp_file, original_filename):
             # print(text_unit.avg_similarity(total_similarity))
 
             item_id = hash(original_filename)
-            #保存到数据库
+            # Save to the database
             web_unit.add_result(item_id, original_filename, st.session_state['username'], similarity)
-            # 保存并关闭临时文件
+            # Save and close the temporary file
             save_uploaded_file(tmp_file, original_filename)
             os.remove(tmp_file)
             st.rerun()
 
 
         else:
-            #清空对话框
+            # Clear the dialog box if not all questions are answered
             evidence_list = []
-            st.write("请回答全部问题")
+            st.warning("Please answer all the questions!")
 
-
-
-
-
-
-#保存文件方法
+# Method to save the uploaded file
 def save_uploaded_file(tmp_file_path, original_filename):
-    # 定义保存路径
+    # Define the save path
     save_dir = Path("upload_files")
     save_dir.mkdir(parents=True, exist_ok=True)
 
-    # 保存上传的文件
+    # Save the uploaded file
     saved_file_path = save_dir / original_filename
     with open(saved_file_path, "wb") as f:
         f.write(Path(tmp_file_path).read_bytes())
 
-
+# Upload function to handle file upload and processing
 def upload():
-    file = st.file_uploader("选择待上传的PDF文件", type=['pdf'])
+    file = st.file_uploader("Please choose the file", type=['pdf'])
 
-
-    #预览上传文件
+    # Preview the uploaded file
     if file is not None:
         file_name = file.name
 
@@ -89,30 +82,22 @@ def upload():
                           f'width="800" height="1000" type="application/pdf">'
             st.markdown(pdf_display, unsafe_allow_html=True)
 
-            if st.button("验证作者身份",use_container_width=True):
+            #Start authentication
+            if st.button("Authenticate", use_container_width=True):
 
-                #转化文件为纯文本
+                # Convert the file to plain text
                 file = text_unit.extract_text_from_pdf(tmp_file.name)
 
-                # # 使用GPT生成问题和答案
-                # response = GPT_api.GPT_generation(file)
-                #
-                # # 对GPT回答进行切分归类处理
-                # ques, ans = text_unit.response_split(response)
+                # Use GPT to generate questions and answers
+                response = GPT_api.GPT_generation(file)
 
-                ques=["1","2"]
-                ans=["1","2"]
-                #打开临时会话，回答问题并进行验证(同时传入文件以进行保存)
+                # Split and categorize GPT responses
+                ques, ans = text_unit.response_split(response)
+
+                ques = ["1", "2"]
+                ans = ["1", "2"]
+                # Open the temporary session, answer questions, and verify (pass the file for saving)
                 authenticator(ques, ans, tmp_file.name, file_name)
 
 
 
-
-
-
-
-# if __name__ == '__main__':
-#     st.title('PDF File Uploader')
-#     upload()
-def a():
-    print("authen is ok")

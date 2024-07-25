@@ -3,51 +3,62 @@ from transformers import BertTokenizer, BertModel
 from sentence_transformers import SentenceTransformer, util
 from torch.utils.tensorboard import SummaryWriter
 
-
 class BertModelWrapper:
     def __init__(self):
-        # # 初始化TensorBoard
+        ## Initialize TensorBoard (test only)
         # self.writer = SummaryWriter('runs/sentence_similarity')
 
-        # 初始化BERT模型和分词器
+        # Initialize default BERT model and tokenizer
         self.model_name = 'bert-base-uncased'
         self.tokenizer = BertTokenizer.from_pretrained(self.model_name)
-        self.model = BertModel.from_pretrained(self.model_name)
 
-        # 使用SentenceTransformer进行句子嵌入
+        # Use SentenceTransformer for sentence embeddings
         self.sentence_model = SentenceTransformer('bert-base-nli-mean-tokens')
 
+        # Load the BERT model
+        self.model = BertModel.from_pretrained(self.model_name)
+
+        # Use SentenceTransformer for sentence embeddings
+        self.sentence_model = SentenceTransformer('bert-base-nli-mean-tokens')
+
+        ## Alternatively, load a pre-trained BERT model (test only)
+        # self.model_name = 'bert-base-uncased'
+        # self.tokenizer = BertTokenizer.from_pretrained(self.model_name)
+        # trained_model_path = './test/saved_model'
+        # self.model = BertModel.from_pretrained(trained_model_path)
+        # self.sentence_model = SentenceTransformer('bert-base-nli-mean-tokens')
+
     def get_sentence_embedding(self, sentence):
-        # 将句子分词并转换为模型输入格式
+        # Tokenize the sentence and convert to model input format
         inputs = self.tokenizer(sentence, return_tensors='pt', padding=True, truncation=True)
         with torch.no_grad():
             outputs = self.model(**inputs)
-        # 获取[CLS]标记的嵌入向量
+        # Get the embedding of the [CLS] token
         embedding = outputs.last_hidden_state[:, 0, :].squeeze()
         return embedding
 
     def cosine_similarity(self, embedding1, embedding2):
-        # 计算余弦相似度
+        # Calculate cosine similarity
         return util.pytorch_cos_sim(embedding1, embedding2)
 
     def sentence_match(self, sen1, sen2):
-        # 输入句子
+        # Input sentences
         sentence1 = sen1
         sentence2 = sen2
 
-        # 使用SentenceTransformer获取句子嵌入
+        # Use SentenceTransformer to get sentence embeddings
         embedding1 = self.sentence_model.encode([sentence1], convert_to_tensor=True)
         embedding2 = self.sentence_model.encode([sentence2], convert_to_tensor=True)
 
-        # 计算余弦相似度
+        # Calculate cosine similarity
         similarity = self.cosine_similarity(embedding1, embedding2)
 
-        # # 将结果写入TensorBoard
+        ## Write results to TensorBoard (test only)
         # self.writer.add_text('Sentence 1', sentence1, 0)
         # self.writer.add_text('Sentence 2', sentence2, 0)
         # self.writer.add_scalar('Cosine Similarity', similarity.item(), 0)
         #
-        # # 可视化句子嵌入
+        ## Visualize sentence embeddings (test only)
         # self.writer.add_embedding(embedding1, metadata=[sentence1], global_step=0, tag='sentence1')
         # self.writer.add_embedding(embedding2, metadata=[sentence2], global_step=0, tag='sentence2')
 
@@ -56,5 +67,5 @@ class BertModelWrapper:
         # print(f"Cosine Similarity: {similarity.item():.4f}")
         return float(similarity)
 
-        # # 关闭TensorBoard
+        # Close TensorBoard (commented out as not being used in this example)
         # self.writer.close()

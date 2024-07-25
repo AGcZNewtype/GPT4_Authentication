@@ -12,7 +12,10 @@ if st.session_state['uid'] == 0:
 
     #Query user information
     if st.button("Login", key="login"):
-        web_unit.check_user_info(email, password)
+        if web_unit.validate(email, "em")and web_unit.validate(password, "pw"):
+            web_unit.check_user_info(email, password)
+        else:
+            st.warning("input formal error!")
 
 
 else:

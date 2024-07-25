@@ -1,6 +1,6 @@
 import PyPDF2
 
-# 提取PDF文件内容
+# Extract text from a PDF file
 def extract_text_from_pdf(file_path):
     pdf_text = ""
     with open(file_path, "rb") as file:
@@ -11,32 +11,31 @@ def extract_text_from_pdf(file_path):
             pdf_text += page.extract_text()
     return pdf_text
 
-
-#对GPT输出问题和答案进行切分合并
+# Split and merge GPT output questions and answers
 def response_split(response):
-    #通过字符切分问题和答案集
+    # Split questions and answers by the '==' delimiter
     allList = response.split('==')
-    quesList=[]
-    ansList=[]
+    quesList = []
+    ansList = []
 
     for i in allList:
         if i.find("++") != -1:
             templist = i.split("++")
-            #加入问题集
+            # Add to question list
             quesList.append(templist[0])
-            #加入答案集
+            # Add to answer list
             ansList.append(templist[1])
 
-    # print(queslist)
-    # print(anslist)
-    return quesList,ansList
+    # print(quesList)
+    # print(ansList)
+    return quesList, ansList
 
-
+# Calculate the average similarity
 def avg_similarity(similarity):
     totalSimilarity = float()
     for i in similarity:
         totalSimilarity += float(i)
-    average = totalSimilarity/(len(similarity))
+    average = totalSimilarity / (len(similarity))
     print(average)
     return average
 
