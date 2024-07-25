@@ -43,8 +43,8 @@ def authenticator(ques, ans, tmp_file, original_filename):
             item_id = hash(original_filename)
             # Save to the database
             web_unit.add_result(item_id, original_filename, st.session_state['username'], similarity)
-            # Save and close the temporary file
-            save_uploaded_file(tmp_file, original_filename)
+            ## Save and close the temporary file
+            # save_uploaded_file(tmp_file, original_filename)
             os.remove(tmp_file)
             st.rerun()
 
@@ -94,8 +94,6 @@ def upload():
                 # Split and categorize GPT responses
                 ques, ans = text_unit.response_split(response)
 
-                ques = ["1", "2"]
-                ans = ["1", "2"]
                 # Open the temporary session, answer questions, and verify (pass the file for saving)
                 authenticator(ques, ans, tmp_file.name, file_name)
 

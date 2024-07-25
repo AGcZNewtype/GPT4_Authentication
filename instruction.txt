@@ -1,4 +1,4 @@
-1.Pretending to be a validator, I will send you a text, please understand the following text and ask 2 questions and relative answers.
+1.Pretending to be a validator, I will send you a text, please understand the following text and ask 5 questions and relative answers.
 2.Among them, questions are raised based on some key points in the text content, and the relative answers can prove that I am the author of this article.
 3.Do not use any special symbol like '+,-,@,[,]' in the context of question nor in answer
 4.Please add "++" after each question, and add "==" after each answer,like question1++answer1==question2++answer2==.....
