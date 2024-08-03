@@ -23,3 +23,5 @@ if st.button("Create account"):
         st.switch_page("pages/login.py")
     else:
         st.warning("Input format error!")
+
+

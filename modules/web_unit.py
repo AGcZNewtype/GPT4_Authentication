@@ -101,10 +101,25 @@ def check_uploads(username):
     else:
         # Use st.dataframe to create a scrollable data frame
         st.dataframe(df, width=800, height=440, hide_index=True)
-        # Print the query results for debugging
 
 # Add a result to the database
 def add_result(item_id, item_name, uploader, score):
+    result = str()
+    if score >= 0 and score <= 0.2:
+        result = "Not author"
+    elif score > 0.2 and score <= 0.4:
+        result = "Possibly author"
+    elif score > 0.4 and score <= 0.6:
+        result = "Perhaps author"
+    elif score > 0.6 and score <= 0.8:
+        result = "Probably author"
+    elif score > 0.8 and score <= 1:
+        result = "Author"
+    else:
+        result = "Error"
+
+    score = result +" ("+ str("%.2f" % score)+")"
+
     try:
         # Establish database connection
         conn = mysql.connector.connect(

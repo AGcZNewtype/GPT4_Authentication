@@ -10,7 +10,7 @@ st.Page("pages/register.py", title="Register"),
         st.Page("pages/logout.py", title="Log Out")
     ],
     "Authenticator" : [
-        st.Page("pages/auth.py", title="authenticate Document"),
+        st.Page("pages/auth.py", title="Authenticate Document"),
         st.Page("pages/view.py", title="View Result")
     ]
 }

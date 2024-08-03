@@ -19,7 +19,7 @@ def GPT_STS(text):
     client = OpenAI(api_key=c_key)
 
     # Instructions for the GPT model
-    instructions = "I will input two paragraphs of text.(Separate with/) Please help me analyze whether the semantics of the two ends of the text are similar, and only provide me with a floating point number from 0 to 1 to represent its similarity."
+    instructions = "I will input two paragraphs of text.(Separate with/) Please help me analyze whether the semantics of the two ends of the text are similar, and only provide me with a floating point number from 0 to 4(0,1,2,3,4, and 0 is not similar, 4 is very similar) to represent its similarity."
 
     # Create a session with the API
     client = OpenAI(api_key=c_key)
@@ -37,6 +37,19 @@ def GPT_STS(text):
     return response.choices[0].message.content
 
 # Iterate through the answer and evidence lists, compute similarity, and print it
-for i in range(len(answer_list)):
-    similarity = GPT_STS(answer_list[i] + "/" + evidence_list[i])
-    print(float(similarity))
+df = pd.read_csv('data.csv')
+
+# 计算每一对answer和evidence的相似度
+similarity_scores = []
+for idx, row in df.iterrows():
+    answer = row['Answer']
+    evidence = row['Evidence']
+    similarity = GPT_STS(answer + "/" + evidence)
+    similarity_scores.append(similarity)
+    print(similarity)
+
+df['Result'] = similarity_scores
+
+df.to_csv('gpt_results.csv', index=False)
+
+print("完成匹配，并将结果保存到gpt_results.csv中")

@@ -32,13 +32,13 @@ def authenticator(ques, ans, tmp_file, original_filename):
             # Create BERT model and validate the results
             BertModel = BertModelWrapper()
             total_similarity = []
-
             for i in range(len(ques)):
                 evidence = evidence_list[i]
-                total_similarity.append(BertModel.sentence_match(evidence, ans[i]))
+                answer = ans[i]
+                total_similarity.append(BertModel.sentence_match(evidence, answer))
 
             similarity = text_unit.avg_similarity(total_similarity)
-            # print(text_unit.avg_similarity(total_similarity))
+            print(similarity)
 
             item_id = hash(original_filename)
             # Save to the database

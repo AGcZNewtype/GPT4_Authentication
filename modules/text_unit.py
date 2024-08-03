@@ -36,6 +36,5 @@ def avg_similarity(similarity):
     for i in similarity:
         totalSimilarity += float(i)
     average = totalSimilarity / (len(similarity))
-    print(average)
     return average
 
