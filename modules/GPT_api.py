@@ -4,7 +4,7 @@ import os
 # Function to generate a response from GPT based on the given PDF text
 def GPT_generation(pdf_text):
     # Set the API key
-    c_key = 'sk-proj-q4BSmJAdKjBDAhm6xtBST3BlbkFJxey686dvUm4P0MMb8l91'
+    c_key = 'openai-token-key'
 
     # Connect to the OpenAI API
     client = OpenAI(api_key=c_key)
